@@ -1,0 +1,17 @@
+---
+# tasks file for ntp
+- name: install ntp package
+  apt: name=ntp state=present update_cache=yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: add server config
+  copy: src=ntp.conf dest=/etc/ntp.conf 
+  when: role == 'server'
+  notify:
+     - Restart ntp
+
+- name: add client config
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  when: role == 'client'
+  notify:
+     - Restart ntp
